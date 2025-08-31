@@ -51,6 +51,7 @@ public class CalculatorUI {
     private JButton btnRoot;
     private JButton btnPower;
     private JButton btnLog;
+    private JButton btnFactorial;
 
     private char selectedOperator = ' ';
     private boolean go = true; // For calculate with Opt != (=)
@@ -95,9 +96,20 @@ public class CalculatorUI {
                 return firstNumber % secondNumber;
             case '^':
                 return Math.pow(firstNumber, secondNumber);
+            case '!':
+                return factorial((int) firstNumber);
             default:
                 return secondNumber;
         }
+    }
+
+    public long factorial(int n) {
+        if (n < 0) throw new IllegalArgumentException("Factorial is not defined for negative numbers");
+        long result = 1;
+        for (int i = 2; i <= n; i++) {
+            result *= i;
+        }
+        return result;
     }
 
     private void initThemeSelector() {
@@ -137,12 +149,14 @@ public class CalculatorUI {
                     btnRoot.setVisible(false);
                     btnPower.setVisible(false);
                     btnLog.setVisible(false);
+                    btnFactorial.setVisible(false);
                     break;
                 case "Scientific":
                     window.setSize(WINDOW_WIDTH + 80, WINDOW_HEIGHT);
                     btnRoot.setVisible(true);
                     btnPower.setVisible(true);
                     btnLog.setVisible(true);
+                    btnFactorial.setVisible(true);
                     break;
             }
         });
@@ -505,6 +519,24 @@ public class CalculatorUI {
             }
         });
         btnLog.setVisible(false);
+
+        btnFactorial = createButton("!", columns[4], rows[4]);
+        btnFactorial.addActionListener(event -> {
+            if (!Pattern.matches("\\d+", inputScreen.getText()))
+                return;
+            int value = Integer.parseInt(inputScreen.getText());
+            if (value < 0) {
+                inputScreen.setText("Error");
+                addToDisplay = false;
+                return;
+            }
+            long result = factorial(value);
+            inputScreen.setText(String.valueOf(result));
+            selectedOperator = '!';
+            addToDisplay = false;
+        });
+        btnFactorial.setFont(new Font("Comic Sans MS", Font.PLAIN, 24));
+        btnFactorial.setVisible(false);
     }
 
     private JComboBox<String> createComboBox(String[] items, int x, int y, String toolTip) {
@@ -556,6 +588,7 @@ public class CalculatorUI {
         btnLog.setForeground(hex2Color(theme.getTextColor()));
         btnPower.setForeground(hex2Color(theme.getTextColor()));
         btnEqual.setForeground(hex2Color(theme.getBtnEqualTextColor()));
+        btnFactorial.setForeground(hex2Color(theme.getTextColor()));
 
         comboCalculatorType.setBackground(hex2Color(theme.getApplicationBackground()));
         comboTheme.setBackground(hex2Color(theme.getApplicationBackground()));
